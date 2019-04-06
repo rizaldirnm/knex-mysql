@@ -13,6 +13,7 @@ app.use(bodyParser.json());
 
 //Routes import
 const auth = require("./routes/auth");
+const product = require("./routes/product");
 
 //Database Configuration
 const config = require("./service/knex");
@@ -30,6 +31,7 @@ app.use(passport.session());
 
 //get routes
 app.use("/api", auth);
+app.use("/api/product", product);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log("Port on: 3000"));
