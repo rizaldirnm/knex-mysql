@@ -1,4 +1,6 @@
 node_modules
 package-lock.json
+whatever.sql
 .env
 .DS_Store
+dev.js
