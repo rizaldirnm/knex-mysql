@@ -56,4 +56,8 @@ router.get("/current_user", Auth.isUserLogin, (req, res) => {
   res.json({ user: req.user });
 });
 
+// @route   GET /api/auth/logout
+// @desc    Show current user
+// @access  Private
+
 module.exports = router;
