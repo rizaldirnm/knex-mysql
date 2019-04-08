@@ -17,7 +17,7 @@ const product = require("./routes/product");
 
 //Database Configuration
 const config = require("./service/knex");
-knex = require("knex")(config); //global variable
+knex = require("knex")(config);
 
 //Tell passport use cookie for authentification
 app.use(
