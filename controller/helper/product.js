@@ -109,7 +109,7 @@ class ProductHelper {
                                        .from('product_category')
                                        .leftJoin('categories', 'categories.categories_id', 'product_category.categories_id')
                                        .where('product_category.product_id', element.product_id)        
-                                               
+
               const getCategory =  categories.map(category => category.Category);
               product[idx].category = getCategory
           })
