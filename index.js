@@ -34,4 +34,4 @@ app.use("/api", auth);
 app.use("/api/product", product);
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log("Port on: 3000"));
+app.listen(port, () => console.log("Server run on port: 3000"));
