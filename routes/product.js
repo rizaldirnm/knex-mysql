@@ -15,6 +15,11 @@ router.post("/add", Auth.isUserLogin, Auth.isAdmin, exeProduct.postAddProduct);
 // @access  Secret
 router.delete("/delete/:id_product", Auth.isUserLogin, Auth.isAdmin, exeProduct.deleteProduct);
 
+// @ROUTE   PATCH api/product/edit
+// @DESC    Edit product
+// @ACCESS  Secret
+router.patch('/edit/:id_product', Auth.isUserLogin, Auth.isAdmin, exeProduct.editProduct);
+
 // @route   GET api/product/all
 // @desc    View all product
 // @access  Secret
@@ -34,6 +39,7 @@ router.post("/category/add", Auth.isUserLogin, Auth.isAdmin, exeProduct.postAddC
 // @desc    Delete category
 // @access  Secret
 router.delete("/category/delete/:category_id", Auth.isUserLogin, Auth.isAdmin,exeProduct.deleteCategory);
+
 
 
 

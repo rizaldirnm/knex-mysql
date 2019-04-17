@@ -1,4 +1,7 @@
+const asyncForEach = require('../library/async').asyncForEach;
+
 class ProductHelper {
+  
   //Add Product
   addProduct(id, data) {
     return new Promise(async (resolve, reject) => {
@@ -11,22 +14,52 @@ class ProductHelper {
           user_id: id
         })
         .then(newProduct => {
-          knex("product_category")
+          let categories = data.categories_id.replace(/\s/g, "").split(",");
+          categories.map(category => {
+            knex("product_category")
             .insert({
               product_id: newProduct[0],
-              categories_id: data.categories_id
+              categories_id: category
             })
             .then(() =>
-              resolve({ success: true, message: "Products success added" })
+              resolve({ success: true, message: "Products success Added" })
             )
             .catch(() =>
-              reject({ success: false, message: "Product fail to added" })
+              reject({ success: false, message: "Product fail to Added" })
             );
+          })
         })
         .catch(err =>
-          reject({ success: false, message: "Product fail to added" })
+          reject({ success: false, message: "Product fail to Added" })
         );
     });
+  }
+
+  //Edit Product
+  editProduct(id, id_product, data) {
+    return new Promise(async (resolve, reject) => {
+      const product =  await knex('products').where('product_id', id_product);
+      if(product.length <= 0) reject({success: false, message: "No Product found!"})
+
+      await knex('products').where('product_id', id_product)
+            .update({
+              name: data.name,
+              description: data.desc,
+              price: data.price,
+              qty: data.qty,
+              user_id: id
+            })
+
+      await knex('product_category').where('product_id', id_product).del()
+      let categories = data.categories_id.replace(/\s/g, "").split(",");
+      categories.map(category => {
+        knex('product_category').insert({
+          product_id: id_product,
+          categories_id: category
+        }).then(() => resolve({success: true, message: "Product success edited"}))
+          .catch(() => reject({success: false, message: "Product failed to edit"}))
+      })
+    })
   }
 
   //Delete Product
@@ -62,13 +95,11 @@ class ProductHelper {
                                 'products.qty',
                                 'products.create_product_at',
                                 'users.name AS Created',
-                                //'categories.name AS Category'
                                 )
                                 .where('products.product_id', id)
                                 .from('products')
                                 .innerJoin('users', 'products.user_id', 'users.user_id')
                                 .innerJoin('product_category', 'products.product_id', 'product_category.product_id')
-                                .innerJoin('categories', 'product_category.categories_id', 'categories.categories_id');
      const categories = await knex.select('categories.name')
                                   .where('products.product_id', id)
                                   .from('products')
@@ -97,20 +128,14 @@ class ProductHelper {
         return reject({success: false, message: "No product available"})
       }
 
-      async function asyncForEach(array, callback) {
-        for (let index = 0; index < array.length; index++) {
-          await callback(array[index], index, array);
-        }
-      }
-
       const allProduct = async () => {
         await asyncForEach(product, async(element, idx) => {
           const categories = await knex.select('categories.name AS Category')
                                        .from('product_category')
                                        .leftJoin('categories', 'categories.categories_id', 'product_category.categories_id')
                                        .where('product_category.product_id', element.product_id)        
-                                               
-              const getCategory =  categories.map(category => category.Category);
+                           
+              let getCategory =  categories.map(category => category.Category);
               product[idx].category = getCategory
           })
           resolve(product);
@@ -146,8 +171,11 @@ class ProductHelper {
         return await knex("categories")
           .where("categories_id", id)
           .del()
-          .then(deleted =>
-            resolve({ success: true, message: "Category successfull delted" })
+          .then(() =>
+            knex('product_category')
+              .where("categories_id", id).del()
+              .then((deleted) => resolve({success: true, message: "Product Success delete"}))
+              .catch(err => reject({success: false, message: "Product fail to added"}))
           )
           .catch(err =>
             reject({ success: false, message: "Category fail to added" })

@@ -27,6 +27,21 @@ exports.deleteProduct = (req, res) => {
     .catch(err => res.status(422).json(err));
 };
 
+//EDIT PRODUCT
+exports.editProduct = (req, res) => {
+  const { errors, isValid } = validateAddProduct(req.body);
+  if (!isValid) {
+    return res.status(400).json({ error: errors });
+  }
+  const { user_id } = req.user;
+  const {id_product} = req.params;
+  const data = req.body;
+  helper
+    .editProduct(user_id, id_product, data)
+    .then(deleteProduct => res.json(deleteProduct))
+    .catch(err => res.status(422).json(err))
+}
+
 //VIEW ONE PRODUCT
 exports.getViewProduct = (req, res) => {
   const { product_id } = req.params;
